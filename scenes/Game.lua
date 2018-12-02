@@ -75,6 +75,7 @@ function Game:draw_right_panel()
 	love.graphics.setColor(Color.Clear)
 
 	println("Inventory", 720, 70, Font.Label)
+	println("Credits: " .. Player.credits, 720, 110)
 end
 
 function Game:draw_body()
