@@ -1,4 +1,5 @@
 local Cresbrook = require "lib.towns.Cresbrook"
+local RainJukebox = require("lib.Jukebox"):new()
 local Button = require "lib.Button"
 local Baton  = require "lib.Baton"
 local Scene = require "lib.Scene"
@@ -44,6 +45,8 @@ function Game:new(...)
 	self.entity_mgr:add(self.btn_back)
 
 	self:check_location()
+	RainJukebox:add_song({ file = "assets/audio/bgm/rain.ogg" })
+	RainJukebox:volume(0.2)
 end
 
 function Game:on_enter()
@@ -96,14 +99,23 @@ function Game:draw_body()
 			end
 		end
 
+		if Player.talk_to.gives and Player.talk_to.spoken_to then
+			for _,v in pairs(Player.talk_to.gives) do
+				if v[1] == "credits" then
+					Player.credits = Player.credits + v[2]
+				end
+			end
+			Player.talk_to.gives = nil
+		end
+
 		if show_dialog then
 			for _,v in pairs(Player.talk_to.dialog) do
 				println(v, x, y)
 				y = y + 30
 			end
+			Player.talk_to.spoken_to = true
 		end
 
-		Player.talk_to.spoken_to = true
 		self.btn_back.hidden = false
 
 	elseif Player.in_town then
@@ -147,6 +159,7 @@ end
 
 function Game:update(dt)
 	Game.super.update(self, dt)
+	RainJukebox:update()
 	self.input:update()
 end
 
@@ -157,15 +170,17 @@ function Game:draw()
 
 	local mx, my = love.mouse.getPosition()
 	for _,v in pairs(self.entity_mgr.entities) do
-		if mx >= v.x*scaleX and mx <= (v.x+v.w)*scaleX and my >= v.y*scaleY and my <= (v.y+v.h)*scaleY then
-			love.graphics.setColor(Color.Blue)
-			love.graphics.rectangle("fill", v.x-1, v.y-1, v.w+1, v.h+1)
-			love.graphics.setColor(Color.Clear)
-			if self.input:pressed "click" then
-				Sound.Click:stop()
-				Sound.Click:play()
-				if v.on_click ~= nil then
-					v:on_click()
+		if not v.hidden then
+			if mx >= v.x*scaleX and mx <= (v.x+v.w)*scaleX and my >= v.y*scaleY and my <= (v.y+v.h)*scaleY then
+				love.graphics.setColor(Color.Blue)
+				love.graphics.rectangle("fill", v.x-1, v.y-1, v.w+1, v.h+1)
+				love.graphics.setColor(Color.Clear)
+				if self.input:pressed "click" then
+					Sound.Click:stop()
+					Sound.Click:play()
+					if v.on_click ~= nil then
+						v:on_click()
+					end
 				end
 			end
 		end
