@@ -19,9 +19,12 @@ function Cresbrook:new(...)
 		},
 		["requires"] = {
 			{ "speak_to", "Derrick Harth"}
+		},
+		["dialog2"] = {
+			"Have you visited Byron's Booty for some gear yet?"
 		}
 	})
-	
+
 	self:add_npc({
 		["name"] = "Derrick Harth",
 		["dialog"] = {

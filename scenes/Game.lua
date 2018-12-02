@@ -39,6 +39,7 @@ function Game:new(...)
 	self.btn_back = btn_back
 	self.btn_back.on_click = function()
 		Player.talk_to = false
+		Player.received = {}
 		self.btn_back.hidden = true
 	end
 	self.btn_back.hidden = true
@@ -85,7 +86,7 @@ function Game:draw_body()
 	if Player.talk_to then
 		println(Player.talk_to.name, 210, 60, Font.Button, Color.Green)
 
-		local show_dialog = true
+		local show_dialog = Player.talk_to.dialog
 		local x, y = 210, 120
 		if Player.talk_to.requires then
 			for _, v in pairs (Player.talk_to.requires) do
@@ -102,6 +103,7 @@ function Game:draw_body()
 		if Player.talk_to.gives and Player.talk_to.spoken_to then
 			for _,v in pairs(Player.talk_to.gives) do
 				if v[1] == "credits" then
+					Player.received[#Player.received+1] = v[2] .. " credits"
 					Player.credits = Player.credits + v[2]
 				end
 			end
@@ -109,9 +111,22 @@ function Game:draw_body()
 		end
 
 		if show_dialog then
-			for _,v in pairs(Player.talk_to.dialog) do
+			--[[if Player.talk_to.spoken_to and Player.talk_to.dialog2 ~= nil then
+				show_dialog = Player.talk_to.dialog2
+			end]]
+			for _,v in pairs(show_dialog) do
 				println(v, x, y)
 				y = y + 30
+			end
+
+			if #Player.received > 0 then
+				y = y + 30
+				println("You received", x, y, Font.Label, Color.Green)
+				y = y + 50
+				for _,v in pairs(Player.received) do
+					println(v, x, y)
+					y = y + 30
+				end
 			end
 			Player.talk_to.spoken_to = true
 		end

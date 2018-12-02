@@ -11,6 +11,7 @@ function Player:new()
 	}
 	self.in_town = false
 	self.credits = 15
+	self.received = {}
 	return self
 end
 
